@@ -1,7 +1,7 @@
-import { Teams } from '@prisma/client';
+import { HardwareTypes, Teams } from '@prisma/client';
 import { z } from 'zod';
 
-export const dataValidation = z.object({
+export const employeeDataValidation = z.object({
   name: z.string().min(5, 'Name should be at least 5 characters long').trim(),
   password: z.string().min(5, 'Password should be at least 5 characters long').trim(),
   email: z.string().email().trim(),
@@ -13,4 +13,13 @@ export const dataValidation = z.object({
 export const signInDataValidation = z.object({
   password: z.string().min(5, 'Password should be at least 5 characters long').trim(),
   email: z.string().email().trim(),
+});
+
+export const deviceDataValidation = z.object({
+  name: z.string().min(5, 'Name should be at least 5 characters long').trim(),
+  descriptions: z.string().min(50, 'Name should be at least 50 characters long').trim(),
+  serial_num: z.string().min(15, 'Serial number should be at least 15 characters long').trim(),
+  type: z.enum([HardwareTypes.MAC_MINI, HardwareTypes.IMAC, HardwareTypes.LAPTOP, HardwareTypes.MOBILE, HardwareTypes.MOBILE]).default(HardwareTypes.MAC_MINI),
+  assignee_by_id: z.string().uuid().nullable(),
+  assign_id: z.string().min(5, 'Assign ID should be at least 5 characters long').trim(),
 });

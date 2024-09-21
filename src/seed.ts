@@ -1,9 +1,11 @@
 import { HardwareTypes, PrismaClient, Teams } from '@prisma/client';
 import { faker } from '@faker-js/faker';
+import _ from 'lodash';
 
 const prisma = new PrismaClient();
 
 async function main() {
+  // _.range(0, 100).forEach(async () => {
   const employeeData = await prisma.employee.create({
     data: {
       email: faker.internet.email(),
@@ -15,7 +17,8 @@ async function main() {
       created_at: new Date(),
     },
   });
-
+// });
+  
   const hardwareData = await prisma.hardwareSystem.create({
     data: {
       name: faker.commerce.productName(),
@@ -28,12 +31,14 @@ async function main() {
     },
   });
 
-  await prisma.records.create({
-    data: {
-      assignee_by_id: employeeData.id,
-      system_id: hardwareData.id,
-    },
-  });
+  // _.range(0, 50).forEach(async () => {
+    await prisma.records.create({
+      data: {
+        assignee_by_id: employeeData.id,
+        system_id: hardwareData.id,
+      },
+    });
+  // });
 
   await prisma.$disconnect();
 }

@@ -21,11 +21,11 @@ model Employee {
   name          String
   team          Teams
   status        Boolean
-  access_token String?
+  access_token  String?
   assigned_item HardwareSystem[] @relation(name: "assignedItem")
   records       Records?         @relation(name: "assignment-records")
   created_at    DateTime?        @default(now())
-  updated_at    DateTime? @updatedAt
+  updated_at    DateTime?        @updatedAt
 }
 
 model HardwareSystem {
@@ -37,17 +37,17 @@ model HardwareSystem {
   assign_id      String        @unique
   assignee       Employee      @relation(name: "assignedItem", fields: [assignee_by_id], references: [id])
   assignee_by_id String
-  created_at     DateTime?
-  updated_at     DateTime?
-  records        Records?      @relation(name: "records")
+  created_at     DateTime?     @default(now())
+  updated_at     DateTime?     @updatedAt
+  records        Records[]      @relation(name: "records") 
 }
 
 model Records {
   id             String         @id @default(uuid())
   assignee       Employee       @relation(name: "assignment-records", fields: [assignee_by_id], references: [id])
   assignee_by_id String         @unique
-  HardwareSystem HardwareSystem @relation(name: "records", fields: [system_id], references: [id])
-  system_id      String         @unique
+  HardwareSystem HardwareSystem @relation(name: "records", fields: [system_id], references: [id], onDelete: Cascade)
+  system_id      String         @unique // foreign key
 }
 
 enum HardwareTypes {

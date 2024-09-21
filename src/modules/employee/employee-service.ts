@@ -1,14 +1,14 @@
 import { Request, Response } from 'express';
 import { prismaClient } from '../../prismaClient';
-import { Employee } from '@prisma/client';
-import { dataValidation } from '../../utils/validations';
+import { Employee, Prisma } from '@prisma/client';
+import { employeeDataValidation } from '../../utils/validations';
 import bcrypt from 'bcrypt';
 
 export async function employeeCreate(req: Request, res: Response) {
   try {
     const body: Employee = req.body;
     // Validate input using Zod
-    const parsedInput = dataValidation.safeParse(body);
+    const parsedInput = employeeDataValidation.safeParse(body);
     if (!parsedInput.success) {
       // Return a formatted error response if validation fails
       const errors = parsedInput.error.errors.map((err) => ({
@@ -36,58 +36,57 @@ export async function employeeCreate(req: Request, res: Response) {
 }
 
 export async function employeeList(req: Request, res: Response) {
-  console.log(req.user);
-
   try {
     // filter
     const filteredValue = req.body;
-    if (filteredValue) {
-      const filteredList = await prismaClient.employee.findMany({
-        where: {
-          team: filteredValue.team,
-        },
-      });
-      return res.status(200).json(filteredList);
-    }
-
-    // search
+    
+    // search : need code refactor
     const searchTerm: string | undefined = typeof req.query.searchTerm === 'string' ? req.query.searchTerm : undefined;
-    if (typeof searchTerm === 'string') {
-      const searchedList = await prismaClient.employee.findMany({
-        orderBy: { created_at: 'desc' },
-        take: 10,
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          phone_no: true,
-          team: true,
-          status: true,
-        },
-        where: {
-          OR: [
-            {
-              name: {
-                contains: searchTerm,
-                mode: 'insensitive',
-              },
-            },
-            {
-              email: {
-                contains: searchTerm,
-                mode: 'insensitive',
-              },
-            },
-          ],
-        },
-      });
-      return res.status(200).json(searchedList);
-    } else {
-      // Handle the case when searchTerm is not a string
-      console.log('Search term is not a string');
-    }
-    const employee = await prismaClient.employee.findMany();
-    return res.status(200).json(employee);
+    const searchQuery: Prisma.EmployeeWhereInput = searchTerm
+    ? {
+        OR: [
+          { name: { contains: searchTerm, mode: 'insensitive' } },  // Case-insensitive search on name
+          { email: { contains: searchTerm, mode: 'insensitive' } }, // Case-insensitive search on email
+        ],
+      }
+    : {};
+
+    const whereQuery: Prisma.EmployeeWhereInput = {
+      AND: [
+        filteredValue, // Add any custom filters passed from the client
+        searchQuery
+      ],
+    };
+    
+    // pagination
+    const page: number = parseInt(req.query.page as string) || 1;
+    const pageSize: number = 10; // Number of records per page
+    const skip = (page - 1) * pageSize; // Calculate how many records to skip
+    const take = pageSize; // Number of records per page
+  
+    // Fetch paginated users
+    const employees = await prismaClient.employee.findMany({
+      skip,
+      take,
+      orderBy: {
+        created_at: 'desc', // or another column like 'createdAt'
+      },
+      where: whereQuery,
+    });
+  
+    // Fetch total number of users for calculating total pages
+    const totalUsers = await prismaClient.employee.count();
+
+    return res.status(200).json({
+      employees,
+      totalPages: Math.ceil(totalUsers / pageSize),
+      currentPage: page,
+      totalEmployees: totalUsers,
+    });
+
+
+    // const employee = await prismaClient.employee.findMany();
+    // return res.status(200).json(employee);
   } catch (err: any) {
     console.log(err);
     return res.json({ message: err.message });
