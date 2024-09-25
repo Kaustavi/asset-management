@@ -44,9 +44,9 @@ model HardwareSystem {
 
 model Records {
   id             String         @id @default(uuid())
-  assignee       Employee       @relation(name: "assignment-records", fields: [assignee_by_id], references: [id])
+  assignee       Employee?       @relation(name: "assignment-records", fields: [assignee_by_id], references: [id])
   assignee_by_id String         @unique
-  HardwareSystem HardwareSystem @relation(name: "records", fields: [system_id], references: [id], onDelete: Cascade)
+  HardwareSystem HardwareSystem? @relation(name: "records", fields: [system_id], references: [id], onDelete: Cascade)
   system_id      String         @unique // foreign key
 }
 

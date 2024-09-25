@@ -9,6 +9,6 @@ services:
         - POSTGRES_USER=nodeProdUser
         - POSTGRES_DB=asset_management_backend
       ports:
-        - '5432:5432'
+        - '5434:5432'
 
-      # postgresql://nodeProdUser:postgresPasswword@localhost:5432/node_pretaa_testing
+      # postgresql://nodeProdUser:postgresPasswword@localhost:5434/asset_management_backend
