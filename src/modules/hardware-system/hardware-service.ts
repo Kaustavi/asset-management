@@ -130,12 +130,23 @@ export async function hardwareUpdate(req: Request, res: Response) {
 export async function hardwareDeleteById(req: Request, res: Response) {
   try {
     const deviceId: string = req.body.id;
+
+    // Check if the record exists
+    const existingDevice = await prismaClient.hardwareSystem.findUnique({
+      where: { id: deviceId },
+    });
+
+    if (!existingDevice) {
+      return res.status(404).json({ message: "Device not found" });
+    }
+
+    // Proceed to delete the record if it exists
     const deletedDevice = await prismaClient.hardwareSystem.delete({
       where: { id: deviceId },
     });
-    return res.status(200).json(deletedDevice);
-  } catch (err: any) {
-    console.log(err);
-    return res.json({ message: err.message });
+
+    res.json({ message: "Hardware system deleted successfully", deletedDevice });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
   }
 }
