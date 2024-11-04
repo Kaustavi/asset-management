@@ -36,11 +36,12 @@ async function main() {
       data: {
         assignee_by_id: employeeData.id,
         system_id: hardwareData.id,
+        employee_name: employeeData.name,
+        employee_email: employeeData.email,
       },
     });
   // });
 
   await prisma.$disconnect();
 }
-
 main();

@@ -13,6 +13,7 @@ datasource db {
 //   url      = env("DATABASE_URL")
 // }
 
+
 model Employee {
   id            String           @id @default(uuid())
   email         String           @unique
@@ -46,6 +47,8 @@ model Records {
   id             String         @id @default(uuid())
   assignee       Employee?       @relation(name: "assignment-records", fields: [assignee_by_id], references: [id])
   assignee_by_id String         @unique
+  employee_name String
+  employee_email String
   HardwareSystem HardwareSystem? @relation(name: "records", fields: [system_id], references: [id], onDelete: Cascade)
   system_id      String         @unique // foreign key
 }

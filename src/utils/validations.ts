@@ -13,6 +13,7 @@ export const employeeDataValidation = z.object({
 export const signInDataValidation = z.object({
   password: z.string().min(5, 'Password should be at least 5 characters long').trim(),
   email: z.string().email().trim(),
+  confirm_password: z.string().min(5, 'Password should be at least 5 characters long').trim().optional(),
 });
 
 export const deviceDataValidation = z.object({

@@ -99,17 +99,24 @@ export async function hardwareUpdate(req: Request, res: Response) {
   try {
     const body: HardwareSystem = req.body;
 
-    // Get prev data
+    // Get device data
     const hardware = await prismaClient.hardwareSystem.findFirst({
       where: { id: body.id },
     });
 
-    if (hardware) {
+    // Get user data
+    const user = await prismaClient.employee.findFirst({
+      where: { id: body.assignee_by_id },
+    });
+
+    if (hardware && user) {
       // Create a new record in record table
       await prismaClient.records.create({
         data: {
           assignee_by_id: hardware?.assignee_by_id,
           system_id: hardware?.id,
+          employee_name: user.name,
+          employee_email: user.email,
         },
       });
     }
@@ -126,7 +133,6 @@ export async function hardwareUpdate(req: Request, res: Response) {
     return res.json({ message: err.message });
   }
 }
-
 export async function hardwareDeleteById(req: Request, res: Response) {
   try {
     const deviceId: string = req.body.id;
