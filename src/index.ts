@@ -4,7 +4,7 @@ import 'module-alias/register';
 import { employeeRoutes } from './modules/employee/employee-controller';
 import { appEnv } from './env';
 import { authenticationRoutes } from './modules/authentication/auth-controller';
-import { authenticate } from './middlewares/auth';
+// import { authenticate } from './middlewares/auth';
 import { deviceRoutes } from './modules/hardware-system/hardware-controller';
 import { recordsRoutes } from './modules/record/record-controller';
 
