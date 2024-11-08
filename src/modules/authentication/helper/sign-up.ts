@@ -17,13 +17,13 @@ export async function signUpService(req: Request, res: Response) {
     const hashedPassword = await bcrypt.hash(parsedInput.data.password, 10);
 
     // Check if the email already exists
-    const existingEmployee = await prismaClient.employee.findUnique({
-      where: { email: parsedInput.data.email },
-    });
+    // const existingEmployee = await prismaClient.employee.findUnique({
+    //   where: { email: parsedInput.data.email },
+    // });
 
-    if (existingEmployee) {
-        return res.status(400).json({ message: 'Email already in use' });
-    }
+    // if (existingEmployee) {
+    //     return res.status(400).json({ message: 'Email already in use' });
+    // }
     const newEmployee = await prismaClient.employee.create({
       data: {
         email: parsedInput.data.email,

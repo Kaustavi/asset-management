@@ -7,12 +7,14 @@ const emailTemplate = fs.readFileSync(path.join(__dirname, "../email-template/in
 
 const template = handlebars.compile(emailTemplate);
 
-const messageBody = (template({
-  name: "David Islo", 
-  interviewer: "Scott Greenwich"
-}));
+
 
 export const transportMailer = async (newEmployee: any) => {
+    const messageBody = (template({
+        name: newEmployee.email, 
+        company_name: "Scott Greenwich",
+        company_mail: "kaustavi@itobuz.com"
+    }));
     await transporter.sendMail({
         from: 'kaustavi@trial-351ndgwe1yrgzqx8.mlsender.net', // Your email
         to: newEmployee.email, // Receiver email
